@@ -15,6 +15,9 @@ namespace RestApplicationWithFilter
             
             // using static extenstion class..
             builder.Services.AddIdempotencyProtection();
+            // Register your filter so DI can inject ILogger and IIdempotencyStore
+            builder.Services.AddScoped<IdempotentAttribute>();
+
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();

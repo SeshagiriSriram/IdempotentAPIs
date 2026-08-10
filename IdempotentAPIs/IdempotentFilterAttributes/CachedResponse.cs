@@ -8,5 +8,7 @@ namespace IdempotentFilterAttributes
     {
         public int StatusCode { get; set; }
         public object? Value { get; set; }
+        public string RequestHash { get; set; } = string.Empty; 
+        // Validates body matching
     }
 }
