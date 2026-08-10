@@ -2,6 +2,9 @@
 A starter guide on building Idempotent APIs using C#
 ### Version History 
 
+#### Version #3.01 
+- On a whmsy, added a single program.cs to show the basics.  
+
 #### Version #3 
 - Added support for request Body Hashing 
 - testing is same as for Version #2 and #1 with scenario #4 added 
