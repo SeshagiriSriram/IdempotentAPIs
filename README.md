@@ -30,7 +30,14 @@ Scenario #3: re-Try Scenario #2 after 3 minutes and you should see same result a
 
 NB: On windows, do not use single quotes. 
 
-#### Key consideratons for V1 
+#### Version #2
+- Added support for Services Extenstion. You can now call 
+  `
+   builder.Services.AddIdempotencyProtection();
+  `
+- Testing remains the same as for V1 
+
+#### Key consideratons for V1 and V2 
 - Storage Lifespan: For production environments, swap InMemoryIdempotencyStore for a distributed cache like Redis so the data persists across multiple application container instances and server restarts.
 - Failure Responses: The logic above explicitly skips caching 4xx and 5xx error states. This permits clients to fix validation mistakes or retry broken infrastructure calls using the original key.
 - Body Hashing: For production strength, combine the Idempotency-Key header with a SHA256 cryptographic hash of the HTTP request payload. This ensures malicious clients do not pass an identical key paired with entirely altered request 

@@ -11,7 +11,10 @@ namespace RestApplicationWithFilter
 
             // Add services to the container.
             // Register your idempotency store
-            builder.Services.AddSingleton<IIdempotencyStore, InMemoryIdempotencyStore>();
+            //builder.Services.AddSingleton<IIdempotencyStore, InMemoryIdempotencyStore>();
+            
+            // using static extenstion class..
+            builder.Services.AddIdempotencyProtection();
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
