@@ -2,6 +2,9 @@
 A starter guide on building Idempotent APIs using C#
 ### Version History 
 
+#### Version #3.02
+- Fixed issue of Body not being read leading to check of hash values being all the same.  
+
 #### Version #3.01 
 - On a whmsy, added a single program.cs to show the basics.  
 
