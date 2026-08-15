@@ -4,6 +4,12 @@ A starter guide on building Idempotent APIs using C#
 
 ## Version History
 
+## Version 4.2
+
+- Added || support for locking and node discovery
+- Partially reduced load time from 1 second to 200ms.
+- You could now work with a majority of redis nodes up.
+
 ## Version 4.1
 
 - Support for Redlock

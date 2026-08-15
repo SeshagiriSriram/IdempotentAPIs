@@ -85,7 +85,7 @@ namespace IdempotentFilterAttributes
                 return true;
             }
 
-            _logger.LogWarning("❌ Consensus Failed. Rolling back partial lock modifications for key: {Key}", lockKey);
+            _logger.LogWarning("🚩Consensus Failed. Rolling back partial lock modifications for key: {Key}", lockKey);
             await ReleaseDistributedLockAsync(lockKey, token);
             return false;
         }
@@ -133,25 +133,39 @@ namespace IdempotentFilterAttributes
         public async Task<CachedResponse?> GetAsync(string key)
         {
             string cacheKey = $"response:{key}";
-            _logger.LogInformation("Querying distributed cluster nodes for cached payload data for key: {Key}", cacheKey);
+            _logger.LogInformation("Querying all distributed cluster nodes simultaneously for key: {Key}", cacheKey);
 
-            foreach (var db in _databases)
+            // FIX: Launch connection tasks to ALL nodes in parallel at the exact same time
+            var tasks = _databases.Select(async (db, index) =>
             {
                 try
                 {
                     var cachedData = await db.StringGetAsync(cacheKey);
                     if (cachedData.HasValue)
                     {
-                        _logger.LogInformation("🎯 Cache Hit detected for Key: {Key}", cacheKey);
-                        return JsonSerializer.Deserialize<CachedResponse>(cachedData.ToString());
+                        return cachedData.ToString();
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogWarning(ex, "Bypassing unresponsive node while reading cache entry.");
+                    _logger.LogWarning("🚩 Bypassing unresponsive Redis Node [{Index}] while fetching cache entry.", index);
                 }
+                return null;
+            });
+
+            // Wait for all nodes to respond or timeout concurrently
+            var results = await Task.WhenAll(tasks);
+
+            // Pick the first non-null string payload returned by any surviving node
+            var validJson = results.FirstOrDefault(json => json != null);
+
+            if (validJson != null)
+            {
+                _logger.LogInformation("🎯 Parallel Cache Hit detected for Key: {Key}", cacheKey);
+                return JsonSerializer.Deserialize<CachedResponse>(validJson);
             }
-            _logger.LogInformation("Cache Miss: No response payload data exists in active nodes for key: {Key}", cacheKey);
+
+            _logger.LogInformation("Cache Miss: No payload data exists in active nodes for key: {Key}", cacheKey);
             return null;
         }
 

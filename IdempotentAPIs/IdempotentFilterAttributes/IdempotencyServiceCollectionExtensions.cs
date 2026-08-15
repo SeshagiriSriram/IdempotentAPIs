@@ -1,6 +1,9 @@
-﻿using IdempotentFilterAttributes.Models;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using IdempotentFilterAttributes.Models;
 using StackExchange.Redis;
 
 namespace IdempotentFilterAttributes
@@ -9,37 +12,27 @@ namespace IdempotentFilterAttributes
     {
         public static IServiceCollection AddIdempotencyProtection(
             this IServiceCollection services,
-            IConfiguration config) // Removed the explicit ILogger parameter
+            IConfiguration config)
         {
             var section = config.GetSection("IdempotentOptions");
-            // Bind options, add validation rule, and ensure it validates immediately at startup
+
             services.AddOptions<IdempotencyOptions>()
-                .Bind(config.GetSection("IdempotentOptions")) // Aligned section name with step 2
-                .Validate(o => o.CacheDurationInMinutes > 0, "CacheDurationInMinutes must be greater than 0.")
+                .Bind(section)
                 .ValidateOnStart();
-            // Extract connection string for the Multiplexer setup
+
             var options = section.Get<IdempotencyOptions>() ?? new IdempotencyOptions();
 
-            // Register StackExchange.Redis ConnectionMultiplexer as a Singleton
-            //services.AddSingleton<IConnectionMultiplexer>(sp =>
-            //ConnectionMultiplexer.Connect(options.RedisConnectionString));
-
-            // Register an independent ConnectionMultiplexer client for each configured node address
             services.AddSingleton<IEnumerable<IConnectionMultiplexer>>(sp =>
             {
-                var clients = new List<IConnectionMultiplexer>();
-                foreach (var node in options.RedisNodes)
-                {
-                    clients.Add(ConnectionMultiplexer.Connect($"{node},abortConnect=false,connectTimeout=1000"));
-                }
-                return clients;
+                var connectTasks = options.RedisNodes.Select(node =>
+                    // FIX: Added explicit low-latency syncTimeout and asyncTimeout limits (in milliseconds)
+                    ConnectionMultiplexer.ConnectAsync($"{node},abortConnect=false,connectTimeout=1000,syncTimeout=250,asyncTimeout=250"));
+
+                Task.WaitAll(connectTasks);
+                return connectTasks.Select(t => t.Result).ToList();
             });
 
-            // Default infrastructure registration
-            //services.AddSingleton<IIdempotencyStore, InMemoryIdempotencyStore>();
-            //services.AddSingleton<IIdempotencyStore, RedisIdempotencyStore>();
-            services.AddSingleton<IIdempotencyStore, RedlockDistributedStore>(); 
-            // Register the filter itself so it can be resolved inside Program.cs
+            services.AddSingleton<IIdempotencyStore, RedlockDistributedStore>();
             services.AddScoped<IdempotentFilter>();
 
             return services;
