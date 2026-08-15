@@ -1,4 +1,4 @@
 <Solution>
-  <Project Path="IdempotentFilterAttributes/IdempotentFilterAttributes.csproj" />
-  <Project Path="RestApplicationWithFilter/RestApplicationWithFilter.csproj" Id="9657fa8c-9ed4-4d9e-a573-ef987fa386bf" />
+  <Project Path="samples/IdempotentAPIs.Playground/IdempotentAPIs.Playground.csproj" Id="80512b00-6937-4694-b5fc-de7fb58a9d05" />
+  <Project Path="src/IdempotentFilterAttributes/IdempotentFilterAttributes.csproj" />
 </Solution>

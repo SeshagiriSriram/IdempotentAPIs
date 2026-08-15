@@ -1,8 +1,9 @@
-﻿using System;
+﻿using IdempotentFilterAttributes.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks; // Ensure Tasks are supported
-namespace IdempotentFilterAttributes
+namespace IdempotentFilterAttributes.Core
 {
     public interface IIdempotencyStore
     {

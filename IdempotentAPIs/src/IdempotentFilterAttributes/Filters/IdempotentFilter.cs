@@ -1,4 +1,5 @@
-﻿using IdempotentFilterAttributes.Models;
+﻿using IdempotentFilterAttributes.Core;
+using IdempotentFilterAttributes.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;

@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace IdempotentFilterAttributes
+namespace IdempotentFilterAttributes.Core
 {
     [AttributeUsage(AttributeTargets.Method)]
     public class IdempotentAttribute : Attribute, IFilterMetadata

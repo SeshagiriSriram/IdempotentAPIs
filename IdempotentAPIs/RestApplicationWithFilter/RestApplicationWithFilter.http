@@ -1,6 +1,0 @@
-@RestApplicationWithFilter_HostAddress = http://localhost:5226
-
-GET {{RestApplicationWithFilter_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
