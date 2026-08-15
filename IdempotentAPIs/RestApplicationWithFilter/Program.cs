@@ -12,14 +12,20 @@ namespace RestApplicationWithFilter
             // Add services to the container.
             // Register your idempotency store
             //builder.Services.AddSingleton<IIdempotencyStore, InMemoryIdempotencyStore>();
-            
-            // using static extenstion class..
-            builder.Services.AddIdempotencyProtection();
-            // Register your filter so DI can inject ILogger and IIdempotencyStore
-            builder.Services.AddScoped<IdempotentAttribute>();
 
-            builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+            builder.Services.AddMemoryCache();
+
+            // 2. Custom Library Hook
+            // Automatically binds AppSettings options, validates them, and maps the Store + Filter
+            builder.Services.AddIdempotencyProtection(builder.Configuration);
+
+            // 3. Register Filter globally inside the MVC controller engine
+            builder.Services.AddControllers(options =>
+            {
+                // Evaluates every request but short-circuits ONLY if [Idempotent] attribute exists
+                options.Filters.Add<IdempotentFilter>();
+            });
+
             builder.Services.AddOpenApi();
 
             var app = builder.Build();

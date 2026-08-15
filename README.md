@@ -2,6 +2,24 @@
 A starter guide on building Idempotent APIs using C#
 ### Version History 
 
+#### Version #4.0
+
+### 🚀 Idempotency Filter Implementation
+
+Successfully designed and verified a thread-safe, configuration-driven idempotency protection framework for ASP.NET Core APIs.
+
+#### 🔧 What's New & Fixed:
+- **`IdempotentAttribute`**: Built a compilation-compliant marker attribute using standard types (`int`/`string`) rather than nullable primitives to align with C# metadata compilation constraints. Supports named parameter overrides like `[Idempotent(CacheDurationInMinutes = 30)]`.
+- **`IdempotencyOptions`**: Designed strongly-typed configuration bindings to map directly from `appsettings.json` sections with built-in `ValidateOnStart()` startup safety checks.
+- **`IdempotentFilter`**: 
+  - Upgraded attribute discovery to a reflection-based `MethodInfo` approach to bypass environment-dependent `ActionDescriptor` metadata gaps.
+  - Implemented request stream buffering (`EnableBuffering()`) and cryptographic body hashing (`SHA256`) to validate request payload integrity and detect key mismatches.
+  - Added structured fallback hierarchy to cleanly prioritize endpoint-level attribute settings over default application properties.
+- **`IIdempotencyStore`**: Establishes explicit pipeline contracts for fetching, writing, locking, and releasing transaction states.
+  - *Memory Store Tier*: Employs .NET's native `IMemoryCache` to avoid memory leaks via absolute item expirations.
+  - *Redis Store Tier (Phase 1)*: Leverages atomic, single-node string flags (`When.NotExists`) and addresses multi-overload type conversion ambiguities when passing `RedisValue` datasets back to `JsonSerializer`.
+
+
 #### Version #3.02
 - Fixed issue of Body not being read leading to check of hash values being all the same.  
 

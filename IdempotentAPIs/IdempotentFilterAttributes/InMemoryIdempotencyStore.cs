@@ -1,25 +1,65 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory; // Make sure to add this package dependency
 
 namespace IdempotentFilterAttributes
 {
-    public class InMemoryIdempotencyStore: IIdempotencyStore
+    public class InMemoryIdempotencyStore : IIdempotencyStore
     {
-        private readonly ConcurrentDictionary<string, CachedResponse> _cache = new();
-        private readonly ConcurrentDictionary<string, bool> _locks = new();
-        public Task<bool> TryLockAsync(string key) =>
-        Task.FromResult(_locks.TryAdd(key, true));
+        private readonly IMemoryCache _memoryCache;
+        private static readonly object LockObject = new();
 
-        public Task<CachedResponse?> GetAsync(string key) =>
-            Task.FromResult(_cache.TryGetValue(key, out var response) ? response : null);
-
-        public Task SaveAsync(string key, CachedResponse response)
+        public InMemoryIdempotencyStore(IMemoryCache memoryCache)
         {
-            _cache[key] = response;
-            _locks.TryRemove(key, out _); // Release lock after saving
+            _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
+        }
+
+        public Task<bool> TryLockAsync(string key)
+        {
+            string lockKey = $"lock:{key}";
+
+            // Atomically check and set an entry for the lock using IMemoryCache
+            lock (LockObject)
+            {
+                if (_memoryCache.TryGetValue(lockKey, out _))
+                {
+                    return Task.FromResult(false); // Lock already held
+                }
+
+                // Set lock with a short safety timeout (e.g., 2 minutes) so a crashed request never permanently blocks a key
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
+
+                _memoryCache.Set(lockKey, true, cacheEntryOptions);
+                return Task.FromResult(true); // Lock acquired
+            }
+        }
+
+        public Task ReleaseLockAsync(string key)
+        {
+            string lockKey = $"lock:{key}";
+            _memoryCache.Remove(lockKey);
+            return Task.CompletedTask;
+        }
+
+        public Task<CachedResponse?> GetAsync(string key)
+        {
+            string cacheKey = $"response:{key}";
+            _memoryCache.TryGetValue(cacheKey, out CachedResponse? cachedResponse);
+            return Task.FromResult(cachedResponse);
+        }
+
+        public Task SaveAsync(string key, CachedResponse response, int cacheDurationInMinutes)
+        {
+            string cacheKey = $"response:{key}";
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromMinutes(cacheDurationInMinutes));
+
+            _memoryCache.Set(cacheKey, response, cacheEntryOptions);
             return Task.CompletedTask;
         }
     }
+
+
 }
