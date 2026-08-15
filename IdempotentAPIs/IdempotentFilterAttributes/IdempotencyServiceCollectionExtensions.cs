@@ -21,12 +21,24 @@ namespace IdempotentFilterAttributes
             var options = section.Get<IdempotencyOptions>() ?? new IdempotencyOptions();
 
             // Register StackExchange.Redis ConnectionMultiplexer as a Singleton
-            services.AddSingleton<IConnectionMultiplexer>(sp =>
-                ConnectionMultiplexer.Connect(options.RedisConnectionString));
+            //services.AddSingleton<IConnectionMultiplexer>(sp =>
+            //ConnectionMultiplexer.Connect(options.RedisConnectionString));
+
+            // Register an independent ConnectionMultiplexer client for each configured node address
+            services.AddSingleton<IEnumerable<IConnectionMultiplexer>>(sp =>
+            {
+                var clients = new List<IConnectionMultiplexer>();
+                foreach (var node in options.RedisNodes)
+                {
+                    clients.Add(ConnectionMultiplexer.Connect($"{node},abortConnect=false,connectTimeout=1000"));
+                }
+                return clients;
+            });
 
             // Default infrastructure registration
             //services.AddSingleton<IIdempotencyStore, InMemoryIdempotencyStore>();
-            services.AddSingleton<IIdempotencyStore, RedisIdempotencyStore>();
+            //services.AddSingleton<IIdempotencyStore, RedisIdempotencyStore>();
+            services.AddSingleton<IIdempotencyStore, RedlockDistributedStore>(); 
             // Register the filter itself so it can be resolved inside Program.cs
             services.AddScoped<IdempotentFilter>();
 

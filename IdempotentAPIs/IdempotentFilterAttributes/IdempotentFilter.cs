@@ -57,8 +57,12 @@ namespace IdempotentFilterAttributes
                 return;
             }
 
-            string connString = _options.RedisConnectionString;
-            _logger.LogInformation("✅ Redis Connection is: {connString}", connString);
+            //string connString = _options.RedisConnectionString;
+            List<string> redisNodes = _options.RedisNodes;
+            foreach (string redisNode in redisNodes)
+            {
+                _logger.LogInformation("✅ Redis Connections Distributed: {redisNode}", redisNode);
+            }
 
             // Fix 3: Resolve header fallback hierarchy (Attribute override -> AppSettings Configuration)
             string headerName = !string.IsNullOrWhiteSpace(attr.CustomHeader)
@@ -69,14 +73,14 @@ namespace IdempotentFilterAttributes
             if (!context.HttpContext.Request.Headers.TryGetValue(headerName, out var extractedKey) ||
                 string.IsNullOrWhiteSpace(extractedKey))
             {
-                _logger.LogWarning("Missing idempotency header: {HeaderName}", headerName);
+                _logger.LogError("❌ Missing idempotency header: {HeaderName}", headerName);
                 context.Result = new BadRequestObjectResult($"Missing '{headerName}' header.");
                 return;
             }
 
             string key = extractedKey.ToString();
             string currentRequestHash = await ComputeBodyHashAsync(context.HttpContext.Request);
-
+            
             // 2. Check if the request was already processed
             var cachedResponse = await _store.GetAsync(key);
 
@@ -86,7 +90,7 @@ namespace IdempotentFilterAttributes
 
                 if (!string.Equals(cachedResponse.RequestHash, currentRequestHash, StringComparison.OrdinalIgnoreCase))
                 {
-                    _logger.LogError("Mismatched Request Hash between original and new request for same key: {key}",key);
+                    _logger.LogError("❌ Mismatched Request Hash between original and new request for same key: {key}", key);
                     context.Result = new BadRequestObjectResult("Idempotency key mismatch: The request body does not match the original request.");
                     return;
                 }
@@ -101,14 +105,14 @@ namespace IdempotentFilterAttributes
 
                 // Fix 4: Used modernized dictionary accessor for safety
                 context.HttpContext.Response.Headers["Idempotency-Match"] = "true";
-                _logger.LogInformation("Cached Response being returned.");
+                _logger.LogWarning("🚩Cached Response being returned.");
                 return;
             }
 
             // 3. Acquire lock to prevent race conditions from concurrent retries
             if (!await _store.TryLockAsync(key))
             {
-                _logger.LogWarning("Lock cannot be acquired for key: {Key}. Request already processing.", key);
+                _logger.LogError("❌ Lock cannot be acquired for key: {Key}. Request already processing.", key);
                 context.Result = new ConflictObjectResult("A request with this key is already processing.");
                 return;
             }
