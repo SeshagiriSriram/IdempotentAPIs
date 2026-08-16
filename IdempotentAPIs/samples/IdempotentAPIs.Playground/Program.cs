@@ -1,4 +1,5 @@
 
+using IdempotentAPIs.Playground.BackgroundWorkers;
 using IdempotentAPIs.Playground.Context;
 using IdempotentFilterAttributes;
 using IdempotentFilterAttributes.Core;
@@ -44,7 +45,9 @@ namespace IdempotentAPIs.Playground
 
             //builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
+            // builder.Services.AddOpenApi();
+            // Register the Outbox Processor Worker to spin up alongside your web application process
+            builder.Services.AddHostedService<OutboxProcessor>();
 
             var app = builder.Build();
             /* Now no longer required... since 
@@ -87,13 +90,13 @@ namespace IdempotentAPIs.Playground
             */ 
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+            /*if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
             }
+            */
 
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
 
 

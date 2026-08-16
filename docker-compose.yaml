@@ -31,8 +31,20 @@ services:
       - "6381:6379"
     volumes:
       - redis_node3_data:/data
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: mq-broker
+    ports:
+      - "5672:5672"   # RabbitMQ AMQP port
+      - "15672:15672" # Management UI dashboard port
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
 volumes:
   mssql_data:
   redis_node1_data:
   redis_node2_data:
   redis_node3_data:
+  rabbitmq_data: 

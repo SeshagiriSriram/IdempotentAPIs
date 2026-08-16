@@ -14,6 +14,7 @@ namespace IdempotentAPIs.Playground.Context
         public DbSet<Item> Items => Set<Item>();
         public DbSet<VendorItemPrice> VendorItemPrices => Set<VendorItemPrice>();
         public DbSet<Order> Orders => Set<Order>();
+        public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -37,6 +38,12 @@ namespace IdempotentAPIs.Playground.Context
 
             modelBuilder.Entity<Order>()
                 .Property(o => o.TotalAmount).HasPrecision(18, 2);
+            modelBuilder.Entity<OutboxMessage>(builder =>
+            {
+                builder.HasKey(m => m.Id);
+                builder.Property(m => m.Type).HasMaxLength(256).IsRequired();
+                builder.Property(m => m.Content).IsRequired();
+            });
         }
     }
 }

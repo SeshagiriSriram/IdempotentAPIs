@@ -16,6 +16,7 @@ namespace IdempotentSample.DbSeeder
         public DbSet<Item> Items => Set<Item>();
         public DbSet<VendorItemPrice> VendorItemPrices => Set<VendorItemPrice>();
         public DbSet<Order> Orders => Set<Order>();
+        public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -25,6 +26,12 @@ namespace IdempotentSample.DbSeeder
             modelBuilder.Entity<VendorItemPrice>().Property(vp => vp.Price).HasPrecision(18, 2);
             // FIX 2: Set the required decimal scale precision for the Orders table
             modelBuilder.Entity<Order>().Property(o => o.TotalAmount).HasPrecision(18, 2);
+            modelBuilder.Entity<OutboxMessage>(builder =>
+            {
+                builder.HasKey(m => m.Id);
+                builder.Property(m => m.Type).HasMaxLength(256).IsRequired();
+                builder.Property(m => m.Content).IsRequired();
+            });
         }
     }
 
@@ -45,5 +52,14 @@ namespace IdempotentSample.DbSeeder
         public DateTime PlacedAt { get; set; } = DateTime.UtcNow;
 
         public Account? Account { get; set; }
+    }
+    public class OutboxMessage
+    {
+        public Guid Id { get; set; } = Guid.NewGuid();
+        public string Type { get; set; } = string.Empty;       // e.g., "OrderPlacedEvent"
+        public string Content { get; set; } = string.Empty;    // Serialized JSON message payload
+        public DateTime OccurredOn { get; set; } = DateTime.UtcNow;
+        public DateTime? ProcessedOn { get; set; }             // Null indicates pending, value indicates completed
+        public string? Error { get; set; }                     // Captures publishing failures for dead-letter diagnostics
     }
 }

@@ -4,6 +4,12 @@ A starter guide on building Idempotent APIs using C#
 
 ## Version History
 
+## Verson 5.3
+
+- Basic Implementation of outbox pattern.
+- RabbitMQ 7.2 support with async background worker.
+- Simple direct One-2-One Queue publish with hardcoded reference in code
+
 ## Version 5.2
 
 - Organized code in more DDD Manner.

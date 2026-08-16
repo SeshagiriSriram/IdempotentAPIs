@@ -85,6 +85,26 @@ namespace IdempotentFilterAttributes.Controllers
 
                 _dbContext.Orders.Add(order);
 
+                // 6. NEW: Map and queue the asynchronous Outbox Event payload
+                var orderPlacedEvent = new
+                {
+                    OrderId = order.Id,
+                    request.AccountId,
+                    request.VendorId,
+                    request.ItemId,
+                    Amount = totalAmount
+                };
+
+                var outboxMessage = new OutboxMessage
+                {
+                    Id = Guid.NewGuid(),
+                    Type = "OrderPlacedEvent",
+                    Content = System.Text.Json.JsonSerializer.Serialize(orderPlacedEvent),
+                    OccurredOn = DateTime.UtcNow,
+                    ProcessedOn = null
+                };
+                _dbContext.OutboxMessages.Add(outboxMessage);
+
                 // Persist state updates to disk
                 await _dbContext.SaveChangesAsync();
 
