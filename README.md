@@ -4,6 +4,27 @@ A starter guide on building Idempotent APIs using C#
 
 ## Version History
 
+## Version 5.1
+
+- Added Standalone for DB Seeder - Simplified program.cs
+- Modified AccountType to use GUUI for co
+
+### Usage
+
+- run `docker compose up -d`
+- run the Standalone Seeder.
+- Start your API.
+- Test. Sample curl is below:
+
+`
+curl -X POST "<your end point>"  
+-H "content-type: application/json"
+-H "X-Idempotency-Key: order-key-v4"
+-d "{\"AccountId\":\"22222222-2222-2222-2222-222222222222\", \"VendorId\":\"33333333-3333-3333-3333-33333333333b\", \"ItemId\":\"44444444-4444-4444-4444-444444444444\", \"Qty\":2}"
+`
+
+Interpret this as: For AccountId, place an order Qty of ItemId from VendorId.  
+
 ## Version 5.0
 
 - Core EF Support with built-in DB initializer.

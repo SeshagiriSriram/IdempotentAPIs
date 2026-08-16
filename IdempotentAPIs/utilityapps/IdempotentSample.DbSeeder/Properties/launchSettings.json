@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "IdempotentSample.DbSeeder": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

@@ -47,6 +47,7 @@ namespace IdempotentAPIs.Playground
             builder.Services.AddOpenApi();
 
             var app = builder.Build();
+            /* Now no longer required... since 
             // now run the initializer... 
             // 2. Upgraded Database Provisioning & Seeding Block
             using (var scope = app.Services.CreateScope())
@@ -83,7 +84,7 @@ namespace IdempotentAPIs.Playground
                     logger.LogError(ex, "❌ An error occurred during database structural initialization.");
                 }
             }
-
+            */ 
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
