@@ -1,6 +1,7 @@
 
 using IdempotentAPIs.Playground.BackgroundWorkers;
 using IdempotentAPIs.Playground.Context;
+using IdempotentAPIs.Playground.Models;
 using IdempotentFilterAttributes;
 using IdempotentFilterAttributes.Core;
 using IdempotentFilterAttributes.Extensions;
@@ -46,8 +47,25 @@ namespace IdempotentAPIs.Playground
             //builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             // builder.Services.AddOpenApi();
+            // Register and validate using our explicit interface execution method
+            builder.Services.AddOptions<MessageBrokerOptions>()
+        .Bind(builder.Configuration.GetSection("MessageBrokerOptions"))
+        // FIX: Use standard PostConfigure so the options object can be cast and validated safely
+        .PostConfigure(options =>
+        {
+            // Cast the concrete option class to its validation interface contract 
+            if (options is IMessageBrokerOptions validatableOptions)
+            {
+                // Executes the Default Interface Method validation check on application startup
+                validatableOptions.Validate();
+            }
+        })
+        .ValidateOnStart(); // Hard-crashes immediately if appsettings lacks Source AND Target parameters
+
+
             // Register the Outbox Processor Worker to spin up alongside your web application process
             builder.Services.AddHostedService<OutboxProcessor>();
+
 
             var app = builder.Build();
             /* Now no longer required... since 

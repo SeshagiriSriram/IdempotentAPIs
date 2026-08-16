@@ -94,15 +94,22 @@ namespace IdempotentFilterAttributes.Controllers
                     request.ItemId,
                     Amount = totalAmount
                 };
-
+                // FIX: Updated to align with the enterprise auditing schema definitions
                 var outboxMessage = new OutboxMessage
                 {
                     Id = Guid.NewGuid(),
                     Type = "OrderPlacedEvent",
                     Content = System.Text.Json.JsonSerializer.Serialize(orderPlacedEvent),
                     OccurredOn = DateTime.UtcNow,
-                    ProcessedOn = null
+
+                    // --- New Auditing Fields Configuration ---
+                    State = "Pending",                 // Marked as Pending so the background worker picks it up
+                    CreatedInDbOn = DateTime.UtcNow,   // Checkpoint A: Saved successfully from the API Controller end
+                    DispatchedToBrokerOn = null,       // Cleared out initially until the background worker thread runs
+                    RetryCount = 0,                    // Starts clean at 0 attempts
+                    Error = null                       // No error logs at point of generation
                 };
+
                 _dbContext.OutboxMessages.Add(outboxMessage);
 
                 // Persist state updates to disk
