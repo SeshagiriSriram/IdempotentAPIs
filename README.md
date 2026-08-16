@@ -4,6 +4,11 @@ A starter guide on building Idempotent APIs using C#
 
 ## Version History
 
+## Version 5.0
+
+- Core EF Support with built-in DB initializer.
+- Simple OrderAPI to place an order implemented.
+
 ## Version 4.2
 
 - Added || support for locking and node discovery

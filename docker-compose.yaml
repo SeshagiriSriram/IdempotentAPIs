@@ -1,0 +1,24 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mssql-db
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourStrong@Pass123
+    ports:
+      - "1433:1433"
+  node1:
+    image: redis:latest
+    container_name: node1
+    ports:
+      - "6379:6379"
+  node2:
+    image: redis:latest
+    container_name: node2
+    ports:
+      - "6380:6379"
+  node3:
+    image: redis:latest
+    container_name: node3
+    ports:
+      - "6381:6379"

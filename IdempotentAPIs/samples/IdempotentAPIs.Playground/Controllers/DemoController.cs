@@ -7,7 +7,7 @@ namespace RestApplicationWithFilter.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PaymentsController : ControllerBase
+    public class DemoController : ControllerBase
     {
         [HttpPost]
         [Idempotent] // Enables protection using the Idempotency-Key header
