@@ -4,6 +4,11 @@ A starter guide on building Idempotent APIs using C#
 
 ## Version History
 
+## Version 5.2
+
+- Organized code in more DDD Manner.
+- Re-factored code for Seeder to use raw execute instead of fallback that do not work.
+
 ## Version 5.1
 
 - Added Standalone for DB Seeder - Simplified program.cs

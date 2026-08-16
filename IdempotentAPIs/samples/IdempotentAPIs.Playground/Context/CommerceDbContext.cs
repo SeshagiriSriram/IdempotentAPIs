@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using IdempotentFilterAttributes.Models;
+using IdempotentAPIs.Playground.Domain;
 
-namespace IdempotentFilterAttributes.Infrastructure
+namespace IdempotentAPIs.Playground.Context
 {
     public class CommerceDbContext : DbContext
     {

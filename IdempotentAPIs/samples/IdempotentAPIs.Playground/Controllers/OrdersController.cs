@@ -1,5 +1,8 @@
-﻿using IdempotentFilterAttributes.Core;
-using IdempotentFilterAttributes.Infrastructure;
+﻿using IdempotentAPIs.Playground.Context;
+using IdempotentAPIs.Playground.Domain;
+using IdempotentAPIs.Playground.Models;
+
+using IdempotentFilterAttributes.Core;
 using IdempotentFilterAttributes.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

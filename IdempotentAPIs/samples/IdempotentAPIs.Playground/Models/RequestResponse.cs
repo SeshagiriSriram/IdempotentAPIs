@@ -1,5 +1,5 @@
 ﻿using System;
-namespace IdempotentFilterAttributes.Models
+namespace IdempotentAPIs.Playground.Models
 {
     // Positional record with built-in parameter mappings
     public record PlaceOrderRequest(Guid AccountId, Guid VendorId, Guid ItemId, int Qty);
