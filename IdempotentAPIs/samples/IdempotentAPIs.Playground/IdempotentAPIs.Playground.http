@@ -1,6 +1,0 @@
-@IdempotentAPIs.Playground_HostAddress = http://localhost:5150
-
-GET {{IdempotentAPIs.Playground_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
