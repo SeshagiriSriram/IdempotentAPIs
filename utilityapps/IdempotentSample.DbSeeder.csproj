@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\samples\IdempotentAPIs.Playground\IdempotentAPIs.Playground.csproj" />
+    <ProjectReference Include="..\samples\IdempotentAPIs.Playground\IdempotentAPIs.Playground.csproj" />
   </ItemGroup>
 
 </Project>

@@ -7,6 +7,7 @@ A starter guide on building Idempotent APIs using C#
 ### Version 5.7
 - finished cleanup of folder structures
 - updated  this file README.md 
+- FEAT: Added Basic Transaction ID Support. roadmap for 5.8 - make it available for any microservice irrespective of transport
 
 ### Version 5.6
 - finished cleanup of folder structures
