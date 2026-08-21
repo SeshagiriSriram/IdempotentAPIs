@@ -4,6 +4,13 @@ A starter guide on building Idempotent APIs using C#
 
 ## 🧾 System Architecture Evolution Ledger
 
+### Version 5.6
+- finished cleanup of folder structures
+- updated  this file README.md 
+
+### Version 5.5 
+- started cleanup of folder structures
+
 ### 🚀 Version 5.4 (Current Baseline)
 
 - **High-Availability Broker Clustering**: Added asynchronous failover routing supporting automated connection cycling across multiple independent RabbitMQ cluster endpoints.

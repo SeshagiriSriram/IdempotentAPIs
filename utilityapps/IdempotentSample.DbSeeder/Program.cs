@@ -49,14 +49,17 @@ namespace IdempotentAPIs.DataSeeder
                     var databaseCreator = masterContext.Database.GetService<IRelationalDatabaseCreator>();
 
                     // Execute a safe raw check to see if the catalog exists
-                    bool databaseExists = masterContext.Database.ExecuteSqlRaw(
-                        $"SELECT COUNT(*) FROM sys.databases WHERE name = '{targetDatabaseName}'") > 0;
+                    var databaseExists = masterContext.Database
+                        .ExecuteSqlRaw(
+                            "SELECT COUNT(*) FROM sys.databases WHERE name = {0}",
+                            targetDatabaseName) > 0;
 
                     if (!databaseExists)
                     {
                         Console.WriteLine($"Database '{targetDatabaseName}' not found. Spawning new catalog...");
                         // Explicitly issues a clean "CREATE DATABASE [CommerceDb]" from the master session
-                        masterContext.Database.ExecuteSqlRaw($"CREATE DATABASE [{targetDatabaseName}]");
+                        masterContext.Database.ExecuteSqlRaw(
+                            "CREATE DATABASE [{0}]", targetDatabaseName);
                         Console.WriteLine($"Catalog '{targetDatabaseName}' created successfully.");
                     }
                 }

@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\IdempotentFilterAttributes\IdempotentFilterAttributes.csproj" />
+    <ProjectReference Include="..\..\samples\IdempotentAPIs.Playground\IdempotentAPIs.Playground.csproj" />
   </ItemGroup>
 
 </Project>

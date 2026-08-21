@@ -4,13 +4,17 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	  <AssemblyName>IdempotentFilterAttributes</AssemblyName>
+	    <RootNameSpace> 
+		IdempotentFilterAttributes
+	</RootNameSpace> 
   </PropertyGroup>
-
-
   <ItemGroup>
     <Folder Include="Core\" />
     <Folder Include="Filters\" />
     <Folder Include="Extensions\" />
+	 <Folder Include="Infrastructure\" />
+    <Folder Include="Models\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,5 +25,4 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.11" />
     <PackageReference Include="StackExchange.Redis" Version="3.1.13" />
   </ItemGroup>
-
 </Project>
