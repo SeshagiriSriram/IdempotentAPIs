@@ -1,12 +1,12 @@
-﻿using IdempotentSample.DbSeeder;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 
-namespace IdempotentAPIs.DataSeeder
+namespace IdempotentSample.DbSeeder
 {
     class Program
     {
@@ -20,15 +20,22 @@ namespace IdempotentAPIs.DataSeeder
         private static readonly Guid TestVendorBId = Guid.Parse("33333333-3333-3333-3333-33333333333b");
         private static readonly Guid TestItemId = Guid.Parse("44444444-4444-4444-4444-444444444444");
 
-        static void Main(string[] args)
+        static void Main(string[] _)
         {
             Console.WriteLine("⏳ Starting standalone database provisioning utility...");
 
             try
             {
+ 
                 // 1. Extract the actual targeted database name ('CommerceDb')
                 var primaryBuilder = new SqlConnectionStringBuilder(PrimaryConnectionString);
                 string targetDatabaseName = primaryBuilder.InitialCatalog;
+
+                // check if name is sql safe... 
+                if (!Regex.IsMatch(targetDatabaseName, @"^[a-zA-Z0-9_]+$"))
+                {
+                    throw new ArgumentException("Invalid database name provided. Only alphanumeric characters and underscores are allowed.");
+                }
 
                 // 2. Build the master-route connection string to pass the login check
                 var masterBuilder = new SqlConnectionStringBuilder(PrimaryConnectionString)
@@ -45,21 +52,23 @@ namespace IdempotentAPIs.DataSeeder
                 {
                     Console.WriteLine("Authenticated via master. Checking catalog presence on server...");
 
+
                     // Fetch EF Core's internal relational service layer
                     var databaseCreator = masterContext.Database.GetService<IRelationalDatabaseCreator>();
 
                     // Execute a safe raw check to see if the catalog exists
                     var databaseExists = masterContext.Database
-                        .ExecuteSqlRaw(
-                            "SELECT COUNT(*) FROM sys.databases WHERE name = {0}",
-                            targetDatabaseName) > 0;
+                        .ExecuteSqlInterpolated($"SELECT COUNT(*) FROM sys.databases WHERE name = {targetDatabaseName}") > 0;
+
 
                     if (!databaseExists)
                     {
                         Console.WriteLine($"Database '{targetDatabaseName}' not found. Spawning new catalog...");
                         // Explicitly issues a clean "CREATE DATABASE [CommerceDb]" from the master session
-                        masterContext.Database.ExecuteSqlRaw(
-                            "CREATE DATABASE [{0}]", targetDatabaseName);
+                        //masterContext.Database.ExecuteSqlInterpolated($"CREATE DATABASE [{targetDatabaseName}]");
+                        #pragma warning disable EF1002 // Possible SQL injection vulnerability.
+                        masterContext.Database.ExecuteSqlRaw($"CREATE DATABASE [{targetDatabaseName}]");
+                        #pragma warning restore EF1002 // Possible SQL injection vulnerability.
                         Console.WriteLine($"Catalog '{targetDatabaseName}' created successfully.");
                     }
                 }

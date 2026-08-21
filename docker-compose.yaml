@@ -1,3 +1,4 @@
+name: idempotency
 services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -48,3 +49,6 @@ volumes:
   redis_node2_data:
   redis_node3_data:
   rabbitmq_data: 
+networks:
+  default:
+    name: platform_shared_network   # 👈 Fixed name: no more "projectname_default"

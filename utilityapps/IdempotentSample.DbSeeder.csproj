@@ -7,6 +7,10 @@
     <Nullable>enable</Nullable>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
+	<AssemblyName>IdempotentSample.DbSeeder</AssemblyName>
+	    <RootNameSpace> 
+		IdempotentSample.DbSeeder
+	</RootNameSpace>
   </PropertyGroup>
 
   <ItemGroup>

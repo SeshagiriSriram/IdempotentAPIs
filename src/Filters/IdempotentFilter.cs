@@ -117,7 +117,10 @@ namespace IdempotentFilterAttributes
                 context.Result = new ConflictObjectResult("A request with this key is already processing.");
                 return;
             }
-
+            // 🚀 Generate the Sequential GUID right here inside the lock!
+            var ledgerId = Guid.NewGuid(); // Or your sequential GUID generator method
+            // Store it in the HttpContext dictionary
+            context.HttpContext.Items["LedgerId"] = ledgerId;
             ResourceExecutedContext executedContext;
             try
             {

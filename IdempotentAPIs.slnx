@@ -1,5 +1,5 @@
 <Solution>
   <Project Path="samples/IdempotentAPIs.Playground/IdempotentAPIs.Playground.csproj" Id="80512b00-6937-4694-b5fc-de7fb58a9d05" />
   <Project Path="src/IdempotentFilterAttributes.csproj" />
-  <Project Path="utilityapps/IdempotentSample.DbSeeder/IdempotentSample.DbSeeder.csproj" Id="d2753af1-dd51-42ae-bcfe-b87e9a0e41c1" />
+  <Project Path="utilityapps/IdempotentSample.DbSeeder.csproj" Id="d2753af1-dd51-42ae-bcfe-b87e9a0e41c1" />
 </Solution>

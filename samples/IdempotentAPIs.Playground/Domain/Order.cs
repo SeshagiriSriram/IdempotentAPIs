@@ -6,6 +6,7 @@ namespace IdempotentAPIs.Playground.Domain
     public class Order
     {
         public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid LedgerId { get; set; }
         public Guid AccountId { get; set; }
         public Guid VendorId { get; set; }
         public Guid ItemId { get; set; }
@@ -14,5 +15,6 @@ namespace IdempotentAPIs.Playground.Domain
         public DateTime PlacedAt { get; set; } = DateTime.UtcNow;
 
         public Account? Account { get; set; }
+        public string Status { get; set; } = "Pending"; 
     }
 }

@@ -4,6 +4,10 @@ A starter guide on building Idempotent APIs using C#
 
 ## 🧾 System Architecture Evolution Ledger
 
+### Version 5.7
+- finished cleanup of folder structures
+- updated  this file README.md 
+
 ### Version 5.6
 - finished cleanup of folder structures
 - updated  this file README.md 
