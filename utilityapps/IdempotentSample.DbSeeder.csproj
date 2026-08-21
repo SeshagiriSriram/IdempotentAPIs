@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Core.idempotencylibrary\Core.idempotencylibrary.csproj" />
     <ProjectReference Include="..\samples\IdempotentAPIs.Playground\IdempotentAPIs.Playground.csproj" />
   </ItemGroup>
 

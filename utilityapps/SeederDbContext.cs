@@ -44,6 +44,7 @@ namespace IdempotentSample.DbSeeder
     public class Order
     {
         public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid TransactionId { get; set; }
         public Guid LedgerId { get; set; }
         public Guid AccountId { get; set; }
         public Guid VendorId { get; set; }
